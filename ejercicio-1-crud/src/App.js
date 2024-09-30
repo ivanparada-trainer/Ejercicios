@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import UserForm from './Components/UserForm';
+import UserList from './Components/UserList';
+import { GlobalStyles } from './styles/GlobalStyles';
 
-function App() {
+const App = () => {
+  const [users, setUsers] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(-1);
+
+  const handleAddUser = (values) => {
+    if (editingIndex !== -1) {
+      const updatedUsers = [...users];
+      updatedUsers[editingIndex] = values;
+      setUsers(updatedUsers);
+      setEditingIndex(-1);
+    } else {
+      setUsers([...users, values]);
+    }
+    setEditingUser(null);
+  };
+
+  const handleEditUser = (index) => {
+    setEditingUser(users[index]);
+    setEditingIndex(index);
+  };
+
+  const handleDeleteUser = (index) => {
+    const filteredUsers = users.filter((_, i) => i !== index);
+    setUsers(filteredUsers);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <GlobalStyles />
+      <UserForm
+        initialValues={editingUser || { email: '', password: '' }}
+        onSubmit={handleAddUser}
+        editing={editingIndex !== -1}
+      />
+      <UserList users={users} onEdit={handleEditUser} onDelete={handleDeleteUser} />
     </div>
   );
-}
+};
 
 export default App;
